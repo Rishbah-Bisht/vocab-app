@@ -14,9 +14,15 @@ mongoose.connect(process.env.MONGO_URI, {
   useUnifiedTopology: true,
 }).then(() => {
   console.log("✅ MongoDB connected");
+
+  const PORT = process.env.PORT || 3000;
+  app.listen(PORT, () => {
+    console.log(`🚀 Server running at http://localhost:${PORT}`);
+  });
 }).catch((err) => {
-  console.error("❌ Mongo Error:", err);
+  console.error("❌ MongoDB connection error:", err);
 });
+
 
 // Routes
 app.get('/', (req, res) => res.redirect('/home'));
@@ -299,5 +305,3 @@ app.post('/add-word', async (req, res) => {
 
 
 
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`Server running at http://localhost:${PORT}`));
