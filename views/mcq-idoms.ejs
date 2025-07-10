@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Idiom MCQ Quiz</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --primary: #673ab7;
+      --primary-dark: #512da8;
+      --primary-light: #7e57c2;
+      --correct: #4caf50;
+      --wrong: #f44336;
+      --bg: #f5f7fa;
+      --card-bg: #ffffff;
+      --text-dark: #333;
+      --text-light: #666;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: var(--bg);
+      margin: 0;
+      padding: 0;
+      line-height: 1.6;
+    }
+
+    .quiz-wrapper {
+      padding: 1rem;
+      min-height: calc(100vh - 80px);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .quiz-container {
+      width: 100%;
+      max-width: 700px;
+      margin: 0 auto;
+      background: var(--card-bg);
+      padding: 1.5rem;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+      flex: 1;
+    }
+
+    h2 {
+      color: var(--primary-dark);
+      text-align: center;
+      margin-bottom: 1.5rem;
+      font-size: clamp(1.5rem, 4vw, 2rem);
+      margin-top: 0;
+    }
+
+    .idiom-display {
+      font-size: clamp(1.2rem, 3vw, 1.4rem);
+      text-align: center;
+      margin-bottom: 2rem;
+      padding: 1rem;
+      background-color: rgba(103, 58, 183, 0.1);
+      border-radius: 8px;
+      font-weight: 600;
+      color: var(--primary-dark);
+      border-left: 4px solid var(--primary);
+    }
+
+    .options-container {
+      display: grid;
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    .option {
+      display: flex;
+      align-items: center;
+      padding: 1rem;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      background-color: white;
+    }
+
+    .option:hover {
+      background-color: rgba(103, 58, 183, 0.05);
+      border-color: var(--primary);
+      transform: translateY(-2px);
+      box-shadow: 0 2px 8px rgba(103, 58, 183, 0.1);
+    }
+
+    input[type="radio"] {
+      transform: scale(1.2);
+      margin-right: 1rem;
+      accent-color: var(--primary);
+    }
+
+    label {
+      flex-grow: 1;
+      cursor: pointer;
+      font-size: clamp(1rem, 3vw, 1.1rem);
+      user-select: none;
+    }
+
+    .submit-btn {
+      width: 100%;
+      padding: 0.8rem;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 1.1rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: 0 2px 8px rgba(103, 58, 183, 0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+
+    .submit-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(103, 58, 183, 0.5);
+    }
+
+    .submit-btn:active {
+      transform: translateY(0);
+    }
+
+    .submit-btn:disabled {
+      background: #cccccc;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
+    .correct-option {
+      background-color: rgba(76, 175, 80, 0.1);
+      border-color: var(--correct) !important;
+      color: var(--correct);
+      font-weight: bold;
+    }
+
+    .wrong-option {
+      background-color: rgba(244, 67, 54, 0.1);
+      border-color: var(--wrong) !important;
+      color: var(--wrong);
+      font-weight: bold;
+    }
+
+    .result-summary {
+      width: 100%;
+      max-width: 700px;
+      margin: 1.5rem auto 0;
+      background: #e8eaf6;
+      padding: 1.5rem;
+      border-radius: 10px;
+      font-size: 1rem;
+      color: var(--primary-dark);
+      display: none;
+    }
+
+    .result-summary h3 {
+      margin-top: 0;
+      color: var(--primary-dark);
+      border-bottom: 2px solid var(--primary-light);
+      padding-bottom: 0.5rem;
+    }
+
+    .result-summary ul {
+      padding-left: 1.5rem;
+    }
+
+    .result-summary li {
+      margin-bottom: 0.8rem;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+      .quiz-container {
+        padding: 1.25rem;
+      }
+
+      .option {
+        padding: 0.8rem;
+      }
+
+      input[type="radio"] {
+        margin-right: 0.8rem;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .quiz-wrapper {
+        padding: 0.75rem;
+      }
+
+      .quiz-container {
+        padding: 1rem;
+      }
+
+      .idiom-display {
+        padding: 0.8rem;
+      }
+
+      .options-container {
+        gap: 0.75rem;
+      }
+
+      .option {
+        padding: 0.75rem;
+      }
+
+      .submit-btn {
+        font-size: 1rem;
+        padding: 0.75rem;
+      }
+
+      .result-summary {
+        padding: 1rem;
+        font-size: 0.9rem;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <%- include('./partial/nav-bar', { currentPage: 'idiomsMCQ' }) %>
+
+  <div class="quiz-wrapper">
+    <div class="quiz-container">
+      <h2><i class="fas fa-language"></i> Idiom MCQ Quiz</h2>
+
+      <p class="idiom-display" id="idiomDisplay">Loading...</p>
+
+      <form id="quizForm">
+        <div class="options-container" id="optionsContainer"></div>
+
+        <button type="submit" id="submitBtn" class="submit-btn">
+          <span id="btnText">Submit Answer</span>
+          <i class="fas fa-paper-plane"></i>
+        </button>
+      </form>
+    </div>
+
+    <div id="summary" class="result-summary"></div>
+  </div>
+
+  <script>
+    const idiomDisplay = document.getElementById('idiomDisplay');
+    const optionsContainer = document.getElementById('optionsContainer');
+    const quizForm = document.getElementById('quizForm');
+    const submitBtn = document.getElementById('submitBtn');
+    const btnText = document.getElementById('btnText');
+    const summaryDiv = document.getElementById('summary');
+
+    let currentAnswer = '';
+    let shownIdioms = [];
+    let submitted = false;
+    const answerResults = [];
+
+    let totalQuestions = 0;
+    let currentQuestionIndex = 0;
+
+    async function loadQuestion() {
+      try {
+        const response = await fetch('/idioms-mcq-json?shown=' + JSON.stringify(shownIdioms));
+        const data = await response.json();
+
+        if (data.finished) {
+          submitBtn.disabled = true;
+          btnText.textContent = "Quiz Completed!";
+          submitBtn.innerHTML = '<i class="fas fa-check-circle"></i> <span id="btnText">Quiz Completed!</span>';
+          showSummary();
+          return;
+        }
+
+        if (data.totalCount) totalQuestions = data.totalCount;
+        else totalQuestions = 20; // fallback
+
+        currentQuestionIndex = shownIdioms.length + 1;
+        idiomDisplay.textContent = `Idiom: ${data.idiom}`;
+        currentAnswer = data.answer;
+        shownIdioms.push(data.id);
+
+        // Build options
+        optionsContainer.innerHTML = '';
+        data.options.forEach((option, i) => {
+          const optionDiv = document.createElement('div');
+          optionDiv.className = 'option';
+          
+          const radio = document.createElement('input');
+          radio.type = 'radio';
+          radio.name = 'opt';
+          radio.id = `opt${i}`;
+          radio.value = option;
+
+          const label = document.createElement('label');
+          label.htmlFor = `opt${i}`;
+          label.textContent = option;
+
+          optionDiv.appendChild(radio);
+          optionDiv.appendChild(label);
+          optionsContainer.appendChild(optionDiv);
+        });
+
+        quizForm.reset();
+        btnText.textContent = 'Submit Answer';
+        submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> <span id="btnText">Submit Answer</span>';
+        submitted = false;
+        summaryDiv.style.display = 'none';
+
+      } catch (err) {
+        idiomDisplay.textContent = "Error loading question. Please try again.";
+        console.error(err);
+      }
+    }
+
+    function showSummary() {
+      quizForm.style.display = 'none';
+      summaryDiv.style.display = 'block';
+
+      const totalCorrect = answerResults.filter(r => r.correct).length;
+      const totalIncorrect = answerResults.length - totalCorrect;
+      const accuracy = Math.round((totalCorrect / answerResults.length) * 100);
+
+      let html = `
+        <h3><i class="fas fa-chart-pie"></i> Quiz Summary</h3>
+        <p><strong>Total Questions:</strong> ${answerResults.length}</p>
+        <p><strong>Correct Answers:</strong> ${totalCorrect}</p>
+        <p><strong>Incorrect Answers:</strong> ${totalIncorrect}</p>
+        <p><strong>Accuracy:</strong> ${accuracy}%</p>
+      `;
+
+      if (totalIncorrect > 0) {
+        html += `
+          <h4><i class="fas fa-exclamation-circle"></i> Mistakes to Review:</h4>
+          <ul>
+        `;
+
+        answerResults.filter(r => !r.correct).forEach(r => {
+          html += `
+            <li>
+              <strong>${r.idiom}</strong><br>
+              <span style="color:var(--wrong);">Your answer: ${r.givenAnswer}</span><br>
+              <span style="color:var(--correct);">Correct answer: ${r.correctAnswer}</span>
+            </li>
+          `;
+        });
+
+        html += '</ul>';
+      } else {
+        html += `
+          <div style="text-align:center; margin-top:1rem;">
+            <i class="fas fa-trophy" style="font-size:2rem; color:var(--correct);"></i>
+            <p>Perfect! You got all answers correct!</p>
+          </div>
+        `;
+      }
+
+      // Add restart button
+      html += `
+        <button onclick="location.reload()" style="
+          margin-top: 1rem;
+          padding: 0.8rem 1.5rem;
+          background: var(--primary);
+          color: white;
+          border: none;
+          border-radius: 8px;
+          cursor: pointer;
+          font-size: 1rem;
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+        ">
+          <i class="fas fa-redo"></i> Try Again
+        </button>
+      `;
+
+      summaryDiv.innerHTML = html;
+    }
+
+    quizForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+
+      if (!submitted) {
+        const selectedOption = document.querySelector('input[name="opt"]:checked');
+        if (!selectedOption) {
+          alert('Please select an option');
+          return;
+        }
+
+        const allOptions = document.querySelectorAll('.option');
+        allOptions.forEach(option => {
+          const radio = option.querySelector('input');
+          if (radio.value === currentAnswer) {
+            option.classList.add('correct-option');
+          }
+          if (radio.checked && radio.value !== currentAnswer) {
+            option.classList.add('wrong-option');
+          }
+          radio.disabled = true;
+        });
+
+        // Save result for this question
+        const lastQuestionId = shownIdioms[shownIdioms.length - 1];
+        answerResults.push({
+          id: lastQuestionId,
+          idiom: idiomDisplay.textContent.replace('Idiom: ', ''),
+          correct: selectedOption.value === currentAnswer,
+          givenAnswer: selectedOption.value,
+          correctAnswer: currentAnswer
+        });
+
+        btnText.textContent = 'Next Question';
+        submitBtn.innerHTML = '<i class="fas fa-arrow-right"></i> <span id="btnText">Next Question</span>';
+        submitted = true;
+      } else {
+        loadQuestion();
+      }
+    });
+
+    loadQuestion();
+  </script>
+</body>
+</html>

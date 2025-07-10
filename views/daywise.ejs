@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Date-wise Vocabulary Filter</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --primary: #673ab7;
+      --primary-light: #7e57c2;
+      --primary-dark: #512da8;
+      --text-dark: #2c3e50;
+      --text-medium: #555;
+      --text-light: #777;
+      --border: #e0e0e0;
+      --bg-light: #f5f5f5;
+      --table-header: #ede7f6;
+      --table-even: #f9f9f9;
+      --shadow: 0 2px 8px rgba(0,0,0,0.08);
+      --error: #e74c3c;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      line-height: 1.6;
+      color: var(--text-dark);
+      background-color: #f8f9fa;
+      margin: 0;
+      padding: 0;
+    }
+
+    .vocabulary-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 1rem;
+    }
+
+    .page-header {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
+    .page-title {
+      font-size: clamp(1.5rem, 4vw, 2rem);
+      color: var(--text-dark);
+      margin-bottom: 0.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+
+    .search-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      justify-content: center;
+      margin-bottom: 2rem;
+    }
+
+    .date-input {
+      padding: 0.8rem 1rem;
+      font-size: 1rem;
+      border: 2px solid var(--border);
+      border-radius: 8px;
+      transition: all 0.3s ease;
+      min-width: 200px;
+    }
+
+    .date-input:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(103, 58, 183, 0.2);
+    }
+
+    .search-btn {
+      padding: 0.8rem 1.5rem;
+      font-size: 1rem;
+      border: none;
+      background-color: var(--primary);
+      color: white;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .search-btn:hover {
+      background-color: var(--primary-dark);
+      transform: translateY(-2px);
+    }
+
+    .search-btn:active {
+      transform: translateY(0);
+    }
+
+    .results-container {
+      margin-top: 2rem;
+    }
+
+    .no-results {
+      text-align: center;
+      padding: 2rem;
+      background-color: #fff9f9;
+      border-radius: 8px;
+      color: var(--error);
+      font-size: 1.1rem;
+    }
+
+    .no-results i {
+      font-size: 2rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .date-section {
+      margin-bottom: 2.5rem;
+      background: white;
+      border-radius: 10px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .date-heading {
+      font-size: 1.4rem;
+      font-weight: bold;
+      color: var(--primary);
+      padding: 1rem 1.5rem;
+      background-color: var(--table-header);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .words-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 1rem;
+    }
+
+    .words-table th, 
+    .words-table td {
+      padding: 1rem;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .words-table th {
+      background-color: var(--table-header);
+      color: var(--text-dark);
+      font-weight: 600;
+      position: sticky;
+      top: 0;
+    }
+
+    .words-table tr:nth-child(even) {
+      background-color: var(--table-even);
+    }
+
+    .word-cell {
+      font-weight: 600;
+      color: var(--text-dark);
+    }
+
+    .meaning-cell {
+      color: var(--text-medium);
+    }
+
+    .sentence-cell {
+      color: var(--text-light);
+      font-style: italic;
+    }
+
+    /* Responsive table */
+    @media (max-width: 768px) {
+      .words-table {
+        display: block;
+      }
+
+      .words-table thead {
+        display: none;
+      }
+
+      .words-table tr {
+        display: block;
+        margin-bottom: 1rem;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 0;
+      }
+
+      .words-table td {
+        display: flex;
+        justify-content: space-between;
+        padding: 0.75rem;
+        border-bottom: 1px dashed var(--border);
+      }
+
+      .words-table td:last-child {
+        border-bottom: none;
+      }
+
+      .words-table td::before {
+        content: attr(data-label);
+        font-weight: 600;
+        color: var(--primary);
+        margin-right: 1rem;
+        flex: 0 0 100px;
+      }
+
+      .word-cell,
+      .meaning-cell,
+      .sentence-cell {
+        width: 100%;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .vocabulary-container {
+        padding: 0.5rem;
+      }
+
+      .search-container {
+        flex-direction: column;
+        gap: 0.75rem;
+      }
+
+      .date-input,
+      .search-btn {
+        width: 100%;
+      }
+
+      .words-table td {
+        font-size: 0.9rem;
+        padding: 0.5rem;
+      }
+
+      .words-table td::before {
+        flex: 0 0 80px;
+        font-size: 0.85rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <%- include('./partial/nav-bar',{ currentPage: 'allWords' }) %>
+  
+  <div class="vocabulary-container">
+    <div class="page-header">
+      <h1 class="page-title">
+        <i class="fas fa-calendar-day"></i> Filter by Date
+      </h1>
+    </div>
+
+    <div class="search-container">
+      <input 
+        type="date" 
+        id="vocabDate" 
+        class="date-input"
+        aria-label="Select date to filter vocabulary"
+      />
+      <button class="search-btn" onclick="onSearchClick()">
+        <i class="fas fa-search"></i>
+        <span>Search</span>
+      </button>
+    </div>
+
+    <div id="resultsContainer"></div>
+  </div>
+
+  <script>
+    async function getVocabByDate(date) {
+      try {
+        const res = await fetch(`/words-on-date?date=${date}`);
+        if (!res.ok) {
+          throw new Error('Network response was not ok');
+        }
+        const words = await res.json();
+
+        const container = document.getElementById('resultsContainer');
+        container.innerHTML = '';
+
+        if (words.length === 0) {
+          container.innerHTML = `
+            <div class="no-results">
+              <i class="fas fa-book"></i>
+              <p>No vocabulary found for selected date</p>
+            </div>
+          `;
+          return;
+        }
+
+        // Format date nicely
+        const dateObj = new Date(date);
+        const dateStr = dateObj.toLocaleDateString(undefined, { 
+          year: 'numeric', 
+          month: 'long', 
+          day: 'numeric' 
+        });
+
+        const section = document.createElement('div');
+        section.className = 'date-section';
+
+        const heading = document.createElement('div');
+        heading.className = 'date-heading';
+        heading.innerHTML = `
+          <i class="fas fa-calendar-check"></i>
+          <span>Vocabulary for ${dateStr}</span>
+        `;
+        section.appendChild(heading);
+
+        const table = document.createElement('table');
+        table.className = 'words-table';
+        table.innerHTML = `
+          <thead>
+            <tr>
+              <th>Vocabulary</th>
+              <th>Meaning</th>
+              <th>Example Sentence</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${words.map(word => `
+              <tr>
+                <td class="word-cell" data-label="Word">${word.word}</td>
+                <td class="meaning-cell" data-label="Meaning">${word.meaning}</td>
+                <td class="sentence-cell" data-label="Example">${word.sentence || '-'}</td>
+              </tr>
+            `).join('')}
+          </tbody>
+        `;
+
+        section.appendChild(table);
+        container.appendChild(section);
+      } catch (error) {
+        console.error('Error:', error);
+        const container = document.getElementById('resultsContainer');
+        container.innerHTML = `
+          <div class="no-results">
+            <i class="fas fa-exclamation-triangle"></i>
+            <p>Error loading vocabulary. Please try again.</p>
+          </div>
+        `;
+      }
+    }
+
+    function onSearchClick() {
+      const date = document.getElementById('vocabDate').value;
+      if (!date) {
+        alert('Please select a date');
+        return;
+      }
+      getVocabByDate(date);
+    }
+
+    // Set default date to today
+    document.addEventListener('DOMContentLoaded', function() {
+      const today = new Date().toISOString().split('T')[0];
+      document.getElementById('vocabDate').value = today;
+    });
+  </script>
+</body>
+</html>

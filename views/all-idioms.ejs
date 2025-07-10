@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title> Dashboard</title>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+  :root {
+    --primary: #8e44ad;
+    --primary-light: #9b59b6;
+    --text-dark: #2c3e50;
+    --text-light: #555;
+    --border: #e0e0e0;
+    --table-header: #ede7f6;
+    --table-hover: #f9f9f9;
+  }
+
+  .idioms-container {
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+  }
+
+  .page-title {
+    text-align: center;
+    color: var(--text-dark);
+    margin-bottom: 2rem;
+    font-size: clamp(1.5rem, 4vw, 2rem);
+    position: relative;
+  }
+
+  .page-title::after {
+    content: '';
+    display: block;
+    width: 80px;
+    height: 3px;
+    background: var(--primary);
+    margin: 0.5rem auto 0;
+  }
+
+  .no-idioms {
+    text-align: center;
+    padding: 2rem;
+    background: #f8f9fa;
+    border-radius: 8px;
+    max-width: 500px;
+    margin: 0 auto;
+  }
+
+  .no-idioms i {
+    font-size: 2.5rem;
+    color: var(--primary);
+    margin-bottom: 1rem;
+  }
+
+  .no-idioms p {
+    font-size: 1.1rem;
+    color: var(--text-light);
+    margin: 0;
+  }
+
+  .no-idioms a {
+    color: var(--primary);
+    text-decoration: none;
+    font-weight: 600;
+  }
+
+  .no-idioms a:hover {
+    text-decoration: underline;
+  }
+
+  .table-container {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    margin: 2rem 0;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+  }
+
+  .idioms-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    min-width: 600px;
+  }
+
+  .idioms-table th,
+  .idioms-table td {
+    padding: 1rem;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .idioms-table th {
+    background: var(--table-header);
+    font-weight: 600;
+    color: var(--text-dark);
+    position: sticky;
+    top: 0;
+  }
+
+  .idioms-table tr:hover {
+    background: var(--table-hover);
+  }
+
+  .idioms-table td {
+    color: var(--text-light);
+    vertical-align: top;
+  }
+
+  .idioms-table td:first-child {
+    font-weight: 600;
+    color: var(--text-dark);
+  }
+
+  /* Responsive table styles */
+  @media (max-width: 768px) {
+    .idioms-table {
+      min-width: 100%;
+    }
+
+    .idioms-table thead {
+      display: none;
+    }
+
+    .idioms-table tr {
+      display: block;
+      margin-bottom: 1rem;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0;
+    }
+
+    .idioms-table td {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.75rem;
+      border-bottom: 1px dashed var(--border);
+    }
+
+    .idioms-table td:last-child {
+      border-bottom: none;
+    }
+
+    .idioms-table td::before {
+      content: attr(data-label);
+      font-weight: 600;
+      color: var(--primary);
+      margin-right: 1rem;
+      flex: 0 0 100px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .idioms-container {
+      padding: 0 0.5rem;
+    }
+
+    .no-idioms {
+      padding: 1.5rem;
+    }
+
+    .no-idioms i {
+      font-size: 2rem;
+    }
+
+    .idioms-table td {
+      font-size: 0.9rem;
+      padding: 0.5rem;
+    }
+
+    .idioms-table td::before {
+      flex: 0 0 80px;
+      font-size: 0.85rem;
+    }
+  }
+</style>
+<%- include('./partial/nav-bar', { currentPage: 'idioms' }) %>
+<div class="idioms-container">
+  <h1 class="page-title">📘 All Idioms</h1>
+  <% if (idioms.length === 0) { %>
+    <div class="no-idioms">
+      <i class="fas fa-book-open"></i>
+      <p>No idioms found. Would you like to <a href="/add-idiom">add one</a>?</p>
+    </div>
+  <% } else { %>
+    <div class="table-container">
+      <table class="idioms-table">
+        <thead>
+          <tr>
+            <th>Idiom</th>
+            <th>Meaning</th>
+            <th>Example</th>
+            <th>Date Added</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% idioms.forEach(idiom => { %>
+            <tr>
+              <td data-label="Idiom"><%= idiom.idiom %></td>
+              <td data-label="Meaning"><%= idiom.meaning %></td>
+              <td data-label="Example"><%= idiom.example %></td>
+              <td data-label="Date"><%= idiom.date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }) %></td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+  <% } %>
+</div>
+

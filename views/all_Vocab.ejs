@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>All Vocabulary Words | A-Z</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --primary: #673ab7;
+      --primary-light: #7e57c2;
+      --text-dark: #333;
+      --text-medium: #555;
+      --text-light: #777;
+      --border: #e0e0e0;
+      --bg-light: #f5f5f5;
+      --table-header: #ede7f6;
+      --table-even: #f9f9f9;
+      --shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      line-height: 1.6;
+      color: var(--text-dark);
+      background-color: #f8f9fa;
+      margin: 0;
+      padding: 0;
+    }
+
+    .vocabulary-container {
+width: 95%;
+      margin: 0 auto;
+      padding: 1rem;
+    }
+
+    h1 {
+      text-align: center;
+      color: var(--text-dark);
+      margin: 2rem 0;
+      font-size: clamp(1.8rem, 4vw, 2.5rem);
+      position: relative;
+    }
+
+    h1::after {
+      content: '';
+      display: block;
+      width: 80px;
+      height: 3px;
+      background: var(--primary);
+      margin: 0.5rem auto 0;
+    }
+
+    .letter-section {
+      margin-bottom: 2.5rem;
+      background: white;
+      border-radius: 10px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .letter-heading {
+      font-size: 1.8rem;
+      font-weight: bold;
+      color: var(--primary);
+      padding: 1rem 1.5rem;
+      background-color: var(--table-header);
+      display: flex;
+      align-items: center;
+    }
+
+    .letter-heading::before {
+      content: '#';
+      margin-right: 0.5rem;
+      color: var(--primary-light);
+    }
+
+    .words-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 1rem;
+    }
+
+    .words-table th, 
+    .words-table td {
+      padding: 1rem;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .words-table th {
+      background-color: var(--table-header);
+      color: var(--text-dark);
+      font-weight: 600;
+      position: sticky;
+      top: 0;
+    }
+
+    .words-table tr:nth-child(even) {
+      background-color: var(--table-even);
+    }
+
+    .word-cell {
+      font-weight: 600;
+      color: var(--text-dark);
+    }
+
+    .meaning-cell {
+      color: var(--text-medium);
+    }
+
+    .sentence-cell {
+      color: var(--text-light);
+      font-style: italic;
+    }
+
+    /* Responsive table */
+    @media (max-width: 768px) {
+      .letter-section {
+        margin-bottom: 2rem;
+      }
+
+      .letter-heading {
+        font-size: 1.5rem;
+        padding: 0.75rem 1rem;
+      }
+
+      .words-table {
+        display: block;
+      }
+
+      .words-table thead {
+        display: none;
+      }
+
+      .words-table tr {
+        display: block;
+        margin-bottom: 1rem;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 0;
+      }
+
+      .words-table td {
+        display: flex;
+        justify-content: space-between;
+        padding: 0.75rem;
+        border-bottom: 1px dashed var(--border);
+      }
+
+      .words-table td:last-child {
+        border-bottom: none;
+      }
+
+      .words-table td::before {
+        content: attr(data-label);
+        font-weight: 600;
+        color: var(--primary);
+        margin-right: 1rem;
+        flex: 0 0 100px;
+      }
+
+      .word-cell,
+      .meaning-cell,
+      .sentence-cell {
+        width: 100%;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .vocabulary-container {
+        padding: 0.5rem;
+      }
+
+      h1 {
+        margin: 1.5rem 0;
+      }
+
+      .words-table td {
+        font-size: 0.9rem;
+        padding: 0.5rem;
+      }
+
+      .words-table td::before {
+        flex: 0 0 80px;
+        font-size: 0.85rem;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <%- include('./partial/nav-bar',{ currentPage: 'allWords' }) %>
+  
+  <div class="vocabulary-container">
+    <h1>Vocabulary Words A to Z</h1>
+
+    <% if (groupedWords.length === 0) { %>
+      <div class="no-words">
+        <i class="fas fa-book-open"></i>
+        <p>No vocabulary words found. Would you like to <a href="/add-word">add one</a>?</p>
+      </div>
+    <% } else { %>
+      <% groupedWords.forEach(group => { %>
+        <div class="letter-section">
+          <div class="letter-heading"><%= group.letter %></div>
+          <table class="words-table">
+            <thead>
+              <tr>
+                <th>Vocabulary</th>
+                <th>Meaning</th>
+                <th>Example Sentence</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% group.words.forEach(word => { %>
+                <tr>
+                  <td class="word-cell" data-label="Word"><%= word.word %></td>
+                  <td class="meaning-cell" data-label="Meaning"><%= word.meaning %></td>
+                  <td class="sentence-cell" data-label="Example"><%= word.sentence %></td>
+                </tr>
+              <% }) %>
+            </tbody>
+          </table>
+        </div>
+      <% }) %>
+    <% } %>
+  </div>
+</body>
+
+</html>

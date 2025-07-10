@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Learning Dashboard</title>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+  :root {
+    --primary: #4361ee;
+    --primary-light: #4895ef;
+    --primary-dark: #3f37c9;
+    --text-dark: #2b2d42;
+    --text-light: #8d99ae;
+    --bg-light: #f8f9fa;
+    --border: #e9ecef;
+    --error: #ef233c;
+    --success: #4cc9f0;
+  }
+
+  .form-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: calc(100vh - 80px);
+    padding: 2rem 1rem;
+    background-color: var(--bg-light);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+
+  .form-container {
+    width: 100%;
+    max-width: 500px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+    padding: 2.5rem;
+    animation: fadeIn 0.4s ease-out;
+  }
+
+  .form-header {
+    text-align: center;
+    margin-bottom: 2.5rem;
+  }
+
+  .form-header h1 {
+    color: var(--text-dark);
+    font-size: 1.8rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .form-header p {
+    color: var(--text-light);
+    font-size: 1rem;
+  }
+
+  .word-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.75rem;
+  }
+
+  .form-group {
+    position: relative;
+  }
+
+  .form-input {
+    width: 100%;
+    padding: 1rem 1rem 1rem 3rem;
+    border: 2px solid var(--border);
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    background-color: white;
+  }
+
+  textarea.form-input {
+    min-height: 100px;
+    resize: vertical;
+    padding-top: 1.5rem;
+  }
+
+  .form-input:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.1);
+  }
+
+  .input-icon {
+    position: absolute;
+    left: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-light);
+    transition: all 0.3s ease;
+  }
+
+  .form-input:focus ~ .input-icon {
+    color: var(--primary);
+  }
+
+  .floating-label label {
+    position: absolute;
+    left: 3rem;
+    top: 1rem;
+    color: var(--text-light);
+    pointer-events: none;
+    transition: all 0.3s ease;
+    background: white;
+    padding: 0 0.5rem;
+  }
+
+  .form-input:focus ~ label,
+  .form-input:not(:placeholder-shown) ~ label {
+    transform: translateY(-1.5rem) scale(0.85);
+    color: var(--primary);
+    left: 2.5rem;
+  }
+
+  .submit-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    width: 100%;
+    padding: 1rem;
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: 1rem;
+  }
+
+  .submit-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(67, 97, 238, 0.3);
+  }
+
+  .submit-btn:active {
+    transform: translateY(0);
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Responsive adjustments */
+  @media (max-width: 768px) {
+    .form-container {
+      padding: 2rem 1.5rem;
+    }
+
+    .form-header h1 {
+      font-size: 1.6rem;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .form-wrapper {
+      padding: 1rem;
+      align-items: flex-start;
+    }
+
+    .form-container {
+      padding: 1.5rem 1.25rem;
+    }
+
+    .form-header {
+      margin-bottom: 1.5rem;
+    }
+
+    .form-header h1 {
+      font-size: 1.4rem;
+    }
+
+    .word-form {
+      gap: 1.25rem;
+    }
+
+    .form-input {
+      padding: 0.9rem 0.9rem 0.9rem 2.8rem;
+      font-size: 0.95rem;
+    }
+
+    .input-icon {
+      left: 0.9rem;
+      font-size: 0.9rem;
+    }
+
+    .floating-label label {
+      left: 2.8rem;
+      font-size: 0.9rem;
+    }
+
+    .form-input:focus ~ label,
+    .form-input:not(:placeholder-shown) ~ label {
+      transform: translateY(-1.3rem) scale(0.85);
+      left: 2.3rem;
+    }
+
+    .submit-btn {
+      padding: 0.9rem;
+      font-size: 1rem;
+    }
+  }
+</style>
+<%- include('./partial/nav-bar',{ currentPage: 'addWord' }) %>
+<div class="form-wrapper">
+  <div class="form-container">
+    <div class="form-header">
+      <h1>Add New Vocabulary</h1>
+      <p>Expand your word collection</p>
+    </div>
+
+    <form method="POST" action="/add-word" class="word-form">
+      <div class="form-group floating-label">
+        <input 
+          type="text" 
+          name="word" 
+          id="word" 
+          class="form-input"
+          placeholder=" "
+          required
+          autocomplete="off"
+        >
+        <label for="word">Word</label>
+        <div class="input-icon">
+          <i class="fas fa-font"></i>
+        </div>
+      </div>
+
+      <div class="form-group floating-label">
+        <input 
+          type="text" 
+          name="meaning" 
+          id="meaning" 
+          class="form-input"
+          placeholder=" "
+          required
+          autocomplete="off"
+        >
+        <label for="meaning">Meaning</label>
+        <div class="input-icon">
+          <i class="fas fa-book-open"></i>
+        </div>
+      </div>
+
+      <div class="form-group floating-label">
+        <textarea
+          name="sentence"
+          id="sentence"
+          class="form-input"
+          placeholder=" "
+          rows="3"
+          required
+        ></textarea>
+        <label for="sentence">Example Sentence</label>
+        <div class="input-icon">
+          <i class="fas fa-comment-dots"></i>
+        </div>
+      </div>
+
+      <button type="submit" class="submit-btn">
+        <span>Add to Vocabulary</span>
+        <i class="fas fa-plus-circle"></i>
+      </button>
+    </form>
+  </div>
+</div>
+

@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VocabLearner | MCQ Quiz</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --primary: #2196f3;
+      --primary-dark: #1976d2;
+      --correct: #4caf50;
+      --wrong: #f44336;
+      --bg: #f5f7fa;
+      --card-bg: #ffffff;
+      --text-dark: #333;
+      --text-light: #666;
+      --border: #e0e0e0;
+    }
+
+    body {
+     
+      background-color: var(--bg);
+      color: var(--text-dark);
+      line-height: 1.6;
+      padding: 0;
+      margin: 0;
+    }
+
+    .main-container {
+      max-width: 1200px;
+      margin: 20px auto;
+      padding: 0 15px;
+    }
+
+    .quiz-container {
+      width: 100%;
+      margin: 0;
+      background: var(--card-bg);
+      padding: 2rem;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    }
+
+    h2 {
+      color: var(--primary-dark);
+      text-align: center;
+      margin-bottom: 1rem;
+      font-size: 2rem;
+      margin-top: 0;
+    }
+
+    .word-display {
+      font-size: 1.25rem;
+      text-align: center;
+      margin-bottom: 2rem;
+      padding: 1rem;
+      background-color: rgba(33, 150, 243, 0.1);
+      border-radius: 8px;
+      border: 1px solid rgba(33, 150, 243, 0.2);
+    }
+
+    .word-display strong {
+      color: var(--primary);
+    }
+
+    .options-container {
+      display: grid;
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    .progress-container {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 1.5rem;
+    }
+
+    #progress {
+      text-align: center;
+      font-size: 1.1rem;
+      font-weight: 600;
+      padding: 0.8rem 1.5rem;
+      border-radius: 50px;
+      background-color: rgba(33, 150, 243, 0.1);
+      color: var(--primary-dark);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      min-width: 200px;
+    }
+
+    .option {
+      display: flex;
+      align-items: center;
+      padding: 1rem 1.5rem;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      transition: all 0.2s ease;
+      cursor: pointer;
+      background-color: white;
+    }
+
+    .option:hover {
+      background-color: rgba(33, 150, 243, 0.05);
+      border-color: var(--primary);
+      transform: translateY(-2px);
+    }
+
+    input[type="radio"] {
+      transform: scale(1.2);
+      margin-right: 1rem;
+      accent-color: var(--primary);
+    }
+
+    label {
+      font-size: 1.1rem;
+      cursor: pointer;
+      flex-grow: 1;
+      padding: 0;
+      text-align: left;
+    }
+
+    .button-container {
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+
+    .submit-btn {
+      flex: 1;
+      padding: 0.8rem;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 1.1rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: 0 2px 8px rgba(33, 150, 243, 0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .submit-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(33, 150, 243, 0.4);
+    }
+
+    .submit-btn:active {
+      transform: translateY(0);
+    }
+
+    .submit-btn:disabled {
+      background: #cccccc;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
+    .correct-option {
+      background-color: rgba(76, 175, 80, 0.1);
+      color: var(--correct);
+      font-weight: bold;
+      border-color: var(--correct) !important;
+    }
+
+    .wrong-option {
+      background-color: rgba(244, 67, 54, 0.1);
+      color: var(--wrong);
+      font-weight: bold;
+      border-color: var(--wrong) !important;
+    }
+
+    .feedback {
+      text-align: center;
+      font-size: 1.2rem;
+      font-weight: 600;
+      margin: 1rem 0;
+      padding: 1rem;
+      border-radius: 8px;
+      animation: fadeIn 0.4s ease-out;
+      display: none;
+    }
+
+    .feedback.correct {
+      color: var(--correct);
+      background-color: rgba(76, 175, 80, 0.1);
+      display:none ;
+    }
+
+    .feedback.wrong {
+      color: var(--wrong);
+      background-color: rgba(244, 67, 54, 0.1);
+      display: none;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Score indicator */
+    .score-indicator {
+      display: none;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 1.5rem;
+    }
+
+    .score-box {
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      font-weight: 600;
+    }
+
+    .correct-score {
+      background-color: rgba(76, 175, 80, 0.1);
+      color: var(--correct);
+    }
+
+    .wrong-score {
+      background-color: rgba(244, 67, 54, 0.1);
+      color: var(--wrong);
+    }
+
+    /* Responsive styles */
+    @media (max-width: 768px) {
+      .quiz-container {
+        padding: 1.5rem;
+      }
+
+      h2 {
+        font-size: 1.5rem;
+      }
+
+      .word-display {
+        font-size: 16px;
+        padding: 0.8rem;
+      }
+
+      .option {
+        padding: 0.8rem 1rem;
+      }
+
+      label {
+        font-size: 12px;
+      }
+
+      .button-container {
+        flex-direction: column;
+      }
+
+      .submit-btn {
+        width: 100%;
+      }
+
+      #progress {
+        font-size: 1rem;
+        padding: 0.6rem 1rem;
+        min-width: 160px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .quiz-container {
+        padding: 1rem;
+      }
+
+      .options-container {
+        gap: 0.8rem;
+      }
+
+      .option {
+        padding: 0.7rem;
+      }
+
+      input[type="radio"] {
+        transform: scale(1.1);
+        margin-right: 0.8rem;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <%- include('./partial/nav-bar',{ currentPage: 'mcq' }) %>
+
+  <div class="main-container">
+    <div class="quiz-container">
+      <h2>MCQ Quiz</h2>
+
+      <div class="progress-container">
+        <div id="progress"></div>
+      </div>
+
+      <div class="score-indicator">
+        <div class="score-box correct-score" id="correctCount">Correct: 0</div>
+        <div class="score-box wrong-score" id="wrongCount">Wrong: 0</div>
+      </div>
+
+      <p class="word-display"><strong>Word:</strong> <%= word %></p>
+
+      <div class="feedback" id="feedback"></div>
+
+      <form id="quizForm">
+        <div class="options-container">
+          <% options.forEach(opt=> { %>
+            <div class="option">
+              <input type="radio" name="opt" value="<%= opt %>" id="<%= opt %>">
+              <label for="<%= opt %>"><%= opt %></label>
+            </div>
+          <% }) %>
+        </div>
+
+        <div class="button-container">
+          <button type="submit" id="submitBtn" class="submit-btn">
+            <i class="fas fa-paper-plane"></i> Submit Answer
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    const wordEl = document.querySelector('.word-display strong').parentElement;
+    const optionsEl = document.querySelector('.options-container');
+    const mcqForm = document.getElementById('quizForm');
+    const submitBtn = document.getElementById('submitBtn');
+    const progressDiv = document.getElementById('progress');
+    const feedbackDiv = document.getElementById('feedback');
+    const correctCountEl = document.getElementById('correctCount');
+    const wrongCountEl = document.getElementById('wrongCount');
+
+    let currentAnswer = '';
+    let shownWords = [];
+    let submitted = false;
+    let correctCount = 0;
+    let wrongCount = 0;
+
+    // To track answers
+    const answerResults = [];
+    // Format: [{id: questionId, correct: true/false, givenAnswer: "option", correctAnswer: "option"}]
+
+    let totalQuestions = 0; // Will be updated from API or hardcoded fallback
+    let currentQuestionIndex = 0;
+
+    async function loadQuestion() {
+      try {
+        const res = await fetch('/mcq-json?shown=' + JSON.stringify(shownWords));
+        const data = await res.json();
+
+        if (data.finished) {
+          submitBtn.disabled = true;
+          submitBtn.innerHTML = '<i class="fas fa-check-circle"></i> Quiz Completed!';
+          showSummary();
+          progressDiv.textContent = `Quiz Completed: ${answerResults.length} questions`;
+          return;
+        }
+
+        // Update totalQuestions if provided by your API
+        if (data.totalCount) {
+          totalQuestions = data.totalCount;
+        } else {
+          // Fallback: set a default total or length of your question bank
+          totalQuestions = 20; // Change this as per your question count
+        }
+
+        currentQuestionIndex = shownWords.length + 1; // Because we push current question id next
+
+        // Update progress text
+        progressDiv.textContent = `Question ${currentQuestionIndex} of ${totalQuestions}`;
+
+        wordEl.innerHTML = `<strong>Word:</strong> ${data.word}`;
+        currentAnswer = data.answer;
+        shownWords.push(data.id);
+
+        // Reset UI
+        feedbackDiv.style.display = 'none';
+        feedbackDiv.className = 'feedback';
+        submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Submit Answer';
+        submitBtn.disabled = false;
+        submitted = false;
+
+        // Build options
+        optionsEl.innerHTML = '';
+        data.options.forEach((option, i) => {
+          const optionDiv = document.createElement('div');
+          optionDiv.className = 'option';
+          
+          const radio = document.createElement('input');
+          radio.type = 'radio';
+          radio.name = 'opt';
+          radio.id = `opt${i}`;
+          radio.value = option;
+
+          const label = document.createElement('label');
+          label.htmlFor = `opt${i}`;
+          label.textContent = option;
+
+          optionDiv.appendChild(radio);
+          optionDiv.appendChild(label);
+          optionsEl.appendChild(optionDiv);
+        });
+
+        mcqForm.reset();
+      } catch (error) {
+        console.error('Error loading question:', error);
+        feedbackDiv.textContent = 'Error loading question. Please try again.';
+        feedbackDiv.className = 'feedback wrong';
+        feedbackDiv.style.display = 'block';
+      }
+    }
+
+    function showFeedback(isCorrect, correctAnswer) {
+      feedbackDiv.style.display = 'none';
+      if (isCorrect) {
+        feedbackDiv.textContent = '✅ Correct! Well done!';
+        feedbackDiv.className = 'feedback correct';
+        correctCount++;
+        correctCountEl.textContent = `Correct: ${correctCount}`;
+      } else {
+        feedbackDiv.textContent = `❌ Incorrect. The correct answer is: ${correctAnswer}`;
+        feedbackDiv.className = 'feedback wrong';
+        wrongCount++;
+        wrongCountEl.textContent = `Wrong: ${wrongCount}`;
+      }
+    }
+
+    function showSummary() {
+      // Hide quiz form & question
+      document.querySelector('.quiz-container').innerHTML = '<h2>Quiz Summary</h2>';
+
+      // Calculate totals
+      const totalCorrect = answerResults.filter(r => r.correct).length;
+      const totalIncorrect = answerResults.length - totalCorrect;
+      const percentage = Math.round((totalCorrect / answerResults.length) * 100);
+
+      // Create summary container
+      const summaryDiv = document.createElement('div');
+      summaryDiv.style.padding = '1.5rem';
+      summaryDiv.style.border = '1px solid #4caf50';
+      summaryDiv.style.borderRadius = '8px';
+      summaryDiv.style.backgroundColor = '#e8f5e9';
+      summaryDiv.style.marginTop = '1rem';
+
+      // Summary text
+      summaryDiv.innerHTML = `
+        <div style="text-align: center; margin-bottom: 1.5rem;">
+          <h3 style="color: var(--primary-dark); margin-bottom: 0.5rem;">Your Score: ${percentage}%</h3>
+          <div style="display: flex; justify-content: center; gap: 1.5rem; margin-bottom: 1rem;">
+            <div style="font-size: 1.2rem; color: var(--correct);">
+              <i class="fas fa-check-circle"></i> ${totalCorrect} Correct
+            </div>
+            <div style="font-size: 1.2rem; color: var(--wrong);">
+              <i class="fas fa-times-circle"></i> ${totalIncorrect} Incorrect
+            </div>
+          </div>
+          <div style="background: white; padding: 1rem; border-radius: 8px; margin-bottom: 1rem;">
+            <div style="width: 100%; height: 20px; background: #e0e0e0; border-radius: 10px; overflow: hidden;">
+              <div style="width: ${percentage}%; height: 100%; background: linear-gradient(90deg, var(--correct) 0%, #8bc34a 100%);"></div>
+            </div>
+          </div>
+        </div>
+        <h3 style="color: var(--primary-dark); border-bottom: 1px solid var(--border); padding-bottom: 0.5rem;">Incorrect Answers Review</h3>
+      `;
+
+      // Incorrect details list
+      const incorrectList = document.createElement('div');
+      incorrectList.style.marginTop = '1rem';
+
+      const incorrectAnswers = answerResults.filter(r => !r.correct);
+      if (incorrectAnswers.length === 0) {
+        incorrectList.innerHTML = `
+          <div style="text-align: center; padding: 1rem; color: var(--correct);">
+            <i class="fas fa-trophy" style="font-size: 2rem; margin-bottom: 0.5rem;"></i>
+            <p>Perfect! You got all answers correct!</p>
+          </div>
+        `;
+      } else {
+        incorrectAnswers.forEach((r, idx) => {
+          const questionDiv = document.createElement('div');
+          questionDiv.style.marginBottom = '1rem';
+          questionDiv.style.padding = '1rem';
+          questionDiv.style.backgroundColor = 'white';
+          questionDiv.style.borderRadius = '8px';
+          questionDiv.style.borderLeft = '4px solid var(--wrong)';
+          questionDiv.innerHTML = `
+            <div style="font-weight: 600; margin-bottom: 0.5rem;">Question ${idx + 1}</div>
+            <div style="margin-bottom: 0.5rem; color: var(--text-light);">Your Answer: <span style="color: var(--wrong); font-weight: 600;">${r.givenAnswer}</span></div>
+            <div style="color: var(--text-light);">Correct Answer: <span style="color: var(--correct); font-weight: 600;">${r.correctAnswer}</span></div>
+          `;
+          incorrectList.appendChild(questionDiv);
+        });
+      }
+
+      summaryDiv.appendChild(incorrectList);
+
+      // Add restart button
+      const restartBtn = document.createElement('button');
+      restartBtn.className = 'submit-btn';
+      restartBtn.style.marginTop = '1.5rem';
+      restartBtn.style.width = '100%';
+      restartBtn.innerHTML = '<i class="fas fa-redo"></i> Restart Quiz';
+      restartBtn.onclick = function() {
+        location.reload();
+      };
+      summaryDiv.appendChild(restartBtn);
+
+      document.querySelector('.quiz-container').appendChild(summaryDiv);
+    }
+
+    mcqForm.addEventListener('submit', function(e) {
+      e.preventDefault();
+
+      if (!submitted) {
+        const selectedOption = document.querySelector('input[name="opt"]:checked');
+        if (!selectedOption) {
+          feedbackDiv.textContent = 'Please select an answer before submitting.';
+          feedbackDiv.className = 'feedback wrong';
+          feedbackDiv.style.display = 'block';
+          return;
+        }
+
+        const allOptions = document.querySelectorAll('.option');
+        allOptions.forEach(optionDiv => {
+          const option = optionDiv.querySelector('input');
+          const label = optionDiv.querySelector('label');
+
+          if (option.value === currentAnswer) {
+            optionDiv.classList.add('correct-option');
+          }
+
+          if (option.checked && option.value !== currentAnswer) {
+            optionDiv.classList.add('wrong-option');
+          }
+
+          option.disabled = true;
+        });
+
+        // Show feedback
+        const isCorrect = selectedOption.value === currentAnswer;
+        showFeedback(isCorrect, currentAnswer);
+
+        // Save result for this question
+        const lastQuestionId = shownWords[shownWords.length - 1];
+        answerResults.push({
+          id: lastQuestionId,
+          correct: isCorrect,
+          givenAnswer: selectedOption.value,
+          correctAnswer: currentAnswer
+        });
+
+        submitBtn.innerHTML = '<i class="fas fa-arrow-right"></i> Next Question';
+        submitted = true;
+      } else {
+        loadQuestion();
+      }
+    });
+
+    // Load first question
+    loadQuestion();
+  </script>
+</body>
+</html>

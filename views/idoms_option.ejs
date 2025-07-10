@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title> Dashboard</title>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --new-word-color: #10b981;
+            --flashcard-color: #3b82f6;
+            --mcq-color: #f59e0b;
+            --allvocab-color: #0bf5d2;
+            --background-color: #f8fafc;
+            --card-color: #ffffff;
+            --text-color: #1e293b;
+        }
+
+     
+
+
+        .dashboard {
+           width: 100%;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            color: #2563eb;
+            margin-bottom: 1rem;
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+            color: #64748b;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .options-grid {
+            width: 90%;
+            margin: auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(50px, 1fr));
+            gap: 1.5rem;
+   
+            margin-top: 2rem;
+            
+        }
+
+        .option-card {
+            background: var(--card-color);
+            border-radius: 12px;
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            text-align: center;
+            border: 1px solid #e2e8f0;
+            cursor: pointer;
+        }
+
+        /* New Word Card */
+        .new-word-card {
+            border-top: 4px solid var(--new-word-color);
+        }
+
+        .new-word-card:hover {
+            box-shadow: 0 10px 15px -3px rgba(16, 185, 129, 0.2);
+        }
+
+        .new-word-card .icon {
+            color: var(--new-word-color);
+        }
+
+        .new-word-card .btn {
+            background-color: var(--new-word-color);
+        }
+
+        .new-word-card .btn:hover {
+            background-color: #0d9f6e;
+        }
+
+        /* Flashcard Card */
+        .flashcard-card {
+            border-top: 4px solid var(--flashcard-color);
+        }
+
+        .flashcard-card:hover {
+            box-shadow: 0 10px 15px -3px rgba(59, 130, 246, 0.2);
+        }
+
+        .flashcard-card .icon {
+            color: var(--flashcard-color);
+        }
+
+        .flashcard-card .btn {
+            background-color: var(--flashcard-color);
+        }
+
+        .flashcard-card .btn:hover {
+            background-color: #2563eb;
+        }
+
+        /* MCQ Card */
+        .mcq-card {
+            border-top: 4px solid var(--mcq-color);
+        }
+
+        .allvocab-card {
+            border-top: 4px solid var(--allvocab-color);
+        }
+        .allvocab-card .icon{
+            color:var(--allvocab-color);
+        }
+        .allvocab-card .btn{
+            background-color: var(--allvocab-color);
+        }
+
+
+        .mcq-card:hover {
+            box-shadow: 0 10px 15px -3px rgba(245, 158, 11, 0.2);
+        }
+
+        .mcq-card .icon {
+            color: var(--mcq-color);
+        }
+
+        .mcq-card .btn {
+            background-color: var(--mcq-color);
+        }
+
+        .mcq-card .btn:hover {
+            background-color: #d97706;
+        }
+
+        .option-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .icon {
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .option-title {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .option-desc {
+            color: #64748b;
+            margin-bottom: 1.5rem;
+            line-height: 1.6;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 0.75rem 1.5rem;
+            color: white;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        @media (max-width: 768px) {
+            .options-grid {
+                grid-template-columns: 1fr;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+ <%- include('./partial/nav-bar',{ currentPage: 'idioms' }) %>
+
+        <div class="dashboard">
+
+
+            <div class="options-grid">
+                <div class="option-card mcq-card" onclick="window.location.href='/idioms-on-date'">
+                    <div class="icon"><i class="fas fa-calendar-day" title="Day-wise Vocabulary"></i>
+</div>
+                    <h2 class="option-title">Day Wise Idiom or Phrase</h2>
+                   
+                    <a href="/idioms-on-date" class="btn"><i class="fas fa-list-ol"></i> Take Quiz</a>
+                </div>
+                <!-- Option 1: New Word -->
+                <div class="option-card new-word-card" onclick="window.location.href='/all-idioms'">
+                    <div class="icon"><i class="fas fa-book-open" title="All Vocabulary"></i>
+</div>
+                    <h2 class="option-title">A-Z All Idiom or Phrase's </h2>
+                  
+                    <a href="/all-idioms" class="btn"><i class="fas fa-plus"></i> Get Started</a>
+                </div>
+
+               
+
+
+            </div>
+        </div>
+</body>
+
+</html>

@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Add Idiom or Phrase</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <style>
+    :root {
+      --primary: #8e44ad;
+      --primary-light: #9b59b6;
+      --primary-dark: #732d91;
+      --text-dark: #1e293b;
+      --text-light: #64748b;
+      --border: #cbd5e1;
+      --bg-light: #f8fafc;
+      --success: #2ecc71;
+      --error: #e74c3c;
+      --shadow: 0 4px 20px rgba(0,0,0,0.08);
+      --transition: all 0.3s ease;
+    }
+
+    body {
+      background-color: #f5f7fa;
+      margin: 0;
+      padding: 0;
+      line-height: 1.6;
+    }
+
+    .idiom-form-container {
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      min-height: calc(100vh - 80px);
+      padding: 2rem 1rem;
+    }
+
+    .idiom-form-card {
+      background-color: white;
+      padding: 2.5rem;
+      border-radius: 12px;
+      box-shadow: var(--shadow);
+      width: 100%;
+      max-width: 500px;
+      animation: fadeIn 0.4s ease-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .form-title {
+      text-align: center;
+      font-size: clamp(1.5rem, 4vw, 1.75rem);
+      color: var(--text-dark);
+      margin-bottom: 1.5rem;
+      position: relative;
+    }
+
+    .form-title::after {
+      content: '';
+      display: block;
+      width: 60px;
+      height: 3px;
+      background: var(--primary);
+      margin: 0.75rem auto 0;
+    }
+
+    .success-message {
+      text-align: center;
+      padding: 0.75rem;
+      background-color: rgba(46, 204, 113, 0.1);
+      color: var(--success);
+      border-radius: 6px;
+      margin-bottom: 1.5rem;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+
+    .idiom-form {
+      display: flex;
+      flex-direction: column;
+      gap: 1.75rem;
+    }
+
+    .form-group {
+      position: relative;
+    }
+
+    .form-input {
+      width: 100%;
+      padding: 1rem 1rem 1rem 3rem;
+      border: 2px solid var(--border);
+      border-radius: 8px;
+      font-size: 1rem;
+      transition: var(--transition);
+      background-color: var(--bg-light);
+    }
+
+    textarea.form-input {
+      min-height: 100px;
+      resize: vertical;
+      padding-top: 1.5rem;
+    }
+
+    .form-input:focus {
+      border-color: var(--primary);
+      background-color: white;
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(142, 68, 173, 0.1);
+    }
+
+    .input-icon {
+      position: absolute;
+      left: 1rem;
+      top: 1rem;
+      color: var(--text-light);
+      transition: var(--transition);
+    }
+
+    .form-input:focus ~ .input-icon {
+      color: var(--primary);
+    }
+
+    .form-label {
+      position: absolute;
+      left: 3rem;
+      top: 1rem;
+      color: var(--text-light);
+      pointer-events: none;
+      transition: var(--transition);
+      background: white;
+      padding: 0 0.5rem;
+    }
+
+    .form-input:focus ~ .form-label,
+    .form-input:not(:placeholder-shown) ~ .form-label {
+      transform: translateY(-1.5rem) scale(0.85);
+      color: var(--primary);
+      left: 2.5rem;
+    }
+
+    .submit-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.75rem;
+      width: 100%;
+      padding: 1rem;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 1.1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition);
+      margin-top: 0.5rem;
+    }
+
+    .submit-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(142, 68, 173, 0.3);
+    }
+
+    .submit-btn:active {
+      transform: translateY(0);
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+      .idiom-form-card {
+        padding: 2rem;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .idiom-form-container {
+        padding: 1rem;
+        align-items: flex-start;
+      }
+
+      .idiom-form-card {
+        padding: 1.5rem 1.25rem;
+      }
+
+      .idiom-form {
+        gap: 1.25rem;
+      }
+
+      .form-input {
+        padding: 0.9rem 0.9rem 0.9rem 2.8rem;
+        font-size: 0.95rem;
+      }
+
+      .input-icon {
+        left: 0.9rem;
+        font-size: 0.9rem;
+      }
+
+      .form-label {
+        left: 2.8rem;
+        font-size: 0.9rem;
+      }
+
+      .form-input:focus ~ .form-label,
+      .form-input:not(:placeholder-shown) ~ .form-label {
+        transform: translateY(-1.3rem) scale(0.85);
+        left: 2.3rem;
+      }
+
+      .submit-btn {
+        padding: 0.9rem;
+        font-size: 1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <%- include('./partial/nav-bar', { currentPage: 'addidiom' }) %>
+
+  <div class="idiom-form-container">
+    <div class="idiom-form-card">
+      <h2 class="form-title">📝 Add Idiom or Phrase</h2>
+
+      <% if (success) { %>
+        <div class="success-message">
+          <i class="fas fa-check-circle"></i>
+          <span>Idiom added successfully!</span>
+        </div>
+      <% } %>
+
+      <form action="/add-idiom" method="POST" class="idiom-form">
+        <div class="form-group">
+          <input 
+            type="text" 
+            name="idiom" 
+            id="idiom" 
+            placeholder=" " 
+            required 
+            class="form-input" 
+            autocomplete="off"
+          />
+          <div class="input-icon">
+            <i class="fas fa-quote-left"></i>
+          </div>
+          <label for="idiom" class="form-label">Idiom or Phrase</label>
+        </div>
+
+        <div class="form-group">
+          <textarea 
+            name="meaning" 
+            id="meaning" 
+            placeholder=" " 
+            rows="3" 
+            required 
+            class="form-input"
+          ></textarea>
+          <div class="input-icon">
+            <i class="fas fa-book-open"></i>
+          </div>
+          <label for="meaning" class="form-label">Meaning</label>
+        </div>
+
+        <div class="form-group">
+          <textarea 
+            name="example" 
+            id="example" 
+            placeholder=" " 
+            rows="3" 
+            required 
+            class="form-input"
+          ></textarea>
+          <div class="input-icon">
+            <i class="fas fa-comment-dots"></i>
+          </div>
+          <label for="example" class="form-label">Example Sentence</label>
+        </div>
+
+        <button type="submit" class="submit-btn">
+          <span>Add to Collection</span>
+          <i class="fas fa-plus-circle"></i>
+        </button>
+      </form>
+    </div>
+  </div>
+</body>
+</html>

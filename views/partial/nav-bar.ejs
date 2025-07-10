@@ -1,0 +1,204 @@
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<nav class="navbar">
+  <div class="navbar-brand">📘 ri_shukie Revisor</div>
+  <button class="navbar-toggle" aria-label="Toggle navigation">
+    <i class="fas fa-bars"></i>
+  </button>
+  <ul class="navbar-links">
+    <li>
+      <a href="/" class="<%= currentPage === 'home' ? 'active' : '' %>">Home</a>
+    </li>
+    <li>
+      <a href="/Squars" class="<%= currentPage === 'squars' ? 'active' : '' %>">Squar's</a>
+    </li>
+    <li>
+      <a href="/idioms" class="<%= currentPage === 'idioms' ? 'active' : '' %>">Idiom or Phrase</a>
+    </li>
+    <li>
+      <a href="/mcq-idioms" class="<%= currentPage === 'idiomsMCQ' ? 'active' : '' %>">MCQ Idiom</a>
+    </li>
+    <li>
+      <a href="/add-idiom" class="<%= currentPage === 'addidiom' ? 'active' : '' %>"><i class="fas fa-plus"></i> Add Idiom</a>
+    </li>
+    <li>
+      <a href="/Vocab" class="<%= currentPage === 'allWords' ? 'active' : '' %>">Vocabulary's</a>
+    </li>
+    <li>
+      <a href="/mcq" class="<%= currentPage === 'mcq' ? 'active' : '' %>">MCQ Vocab</a>
+    </li>
+    <li>
+      <a href="/add-word" class="<%= currentPage === 'addWord' ? 'active' : '' %>"><i class="fas fa-plus"></i> Add Vocab</a>
+    </li>
+  </ul>
+</nav>
+
+<style>
+/* Navbar container */
+.navbar {
+  width: 100%;
+  background: linear-gradient(135deg, #2f2f2f 0%, #7f00ff 100%);
+  color: white;
+  padding: 15px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+/* Body style */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Branding */
+.navbar-brand {
+  font-size: 1.5rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+}
+
+.navbar-brand:hover {
+  transform: scale(1.05);
+}
+
+/* Toggle button for mobile */
+.navbar-toggle {
+  display: none;
+  font-size: 1.5rem;
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+  padding: 5px;
+}
+
+/* Nav links */
+.navbar-links {
+  display: flex;
+  gap: 15px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  transition: all 0.3s ease;
+}
+
+.navbar-links li a {
+  color: white;
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 1rem;
+  padding: 8px 12px;
+  border-radius: 6px;
+  transition: all 0.3s ease;
+  position: relative;
+  display: block;
+}
+
+.navbar-links li a:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+  transform: translateY(-2px);
+}
+
+.active {
+  background-color: rgba(255, 255, 255, 0.2);
+  transform: translateY(-2px);
+  border-bottom: 3px solid white;
+}
+
+.navbar-links li a::after {
+  content: '';
+  position: absolute;
+  width: 0;
+  height: 2px;
+  bottom: 0;
+  left: 0;
+  background-color: white;
+  transition: width 0.3s ease;
+}
+
+.navbar-links li a:hover::after {
+  width: 100%;
+}
+
+/* Mobile Styles */
+@media (max-width: 992px) {
+  .navbar {
+    padding: 12px 15px;
+  }
+  
+  .navbar-links {
+    gap: 10px;
+  }
+  
+  .navbar-links li a {
+    font-size: 0.9rem;
+    padding: 6px 8px;
+  }
+}
+
+@media (max-width: 768px) {
+  .navbar-toggle {
+    display: block;
+  }
+  
+  .navbar-links {
+    display: none;
+    flex-direction: column;
+    width: 100%;
+    margin-top: 15px;
+    gap: 5px;
+    padding: 10px 0;
+  }
+  
+  .navbar-links.show {
+    display: flex;
+  }
+  
+  .navbar-links li {
+    width: 100%;
+  }
+  
+  .navbar-links li a {
+    width: 100%;
+    padding: 10px 15px;
+    font-size: 1rem;
+  }
+  
+  .active {
+    border-bottom: none;
+    background-color: rgba(255, 255, 255, 0.3);
+  }
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const toggleButton = document.querySelector('.navbar-toggle');
+  const navLinks = document.querySelector('.navbar-links');
+  
+  toggleButton.addEventListener('click', function() {
+    navLinks.classList.toggle('show');
+  });
+  
+  // Close menu when clicking on a link (optional)
+  const navItems = document.querySelectorAll('.navbar-links li a');
+  navItems.forEach(item => {
+    item.addEventListener('click', function() {
+      if (window.innerWidth <= 768) {
+        navLinks.classList.remove('show');
+      }
+    });
+  });
+});
+</script>
