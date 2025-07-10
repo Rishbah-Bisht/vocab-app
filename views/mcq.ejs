@@ -332,243 +332,229 @@
   </div>
 
   <script>
-    const wordEl = document.querySelector('.word-display strong').parentElement;
-    const optionsEl = document.querySelector('.options-container');
-    const mcqForm = document.getElementById('quizForm');
-    const submitBtn = document.getElementById('submitBtn');
-    const progressDiv = document.getElementById('progress');
-    const feedbackDiv = document.getElementById('feedback');
-    const correctCountEl = document.getElementById('correctCount');
-    const wrongCountEl = document.getElementById('wrongCount');
+  const wordEl = document.querySelector('.word-display strong').parentElement;
+  const optionsEl = document.querySelector('.options-container');
+  const mcqForm = document.getElementById('quizForm');
+  const submitBtn = document.getElementById('submitBtn');
+  const progressDiv = document.getElementById('progress');
+  const feedbackDiv = document.getElementById('feedback');
+  const correctCountEl = document.getElementById('correctCount');
+  const wrongCountEl = document.getElementById('wrongCount');
 
-    let currentAnswer = '';
-    let shownWords = [];
-    let submitted = false;
-    let correctCount = 0;
-    let wrongCount = 0;
+  let currentAnswer = '';
+  let shownWords = [];
+  let submitted = false;
+  let correctCount = 0;
+  let wrongCount = 0;
 
-    // To track answers
-    const answerResults = [];
-    // Format: [{id: questionId, correct: true/false, givenAnswer: "option", correctAnswer: "option"}]
+  const answerResults = [];
+  let totalQuestions = 0;
+  let currentQuestionIndex = 0;
 
-    let totalQuestions = 0; // Will be updated from API or hardcoded fallback
-    let currentQuestionIndex = 0;
+  async function loadQuestion() {
+    try {
+      const res = await fetch('/mcq-json?shown=' + JSON.stringify(shownWords));
+      const data = await res.json();
 
-    async function loadQuestion() {
-      try {
-        const res = await fetch('/mcq-json?shown=' + JSON.stringify(shownWords));
-        const data = await res.json();
-
-        if (data.finished) {
-          submitBtn.disabled = true;
-          submitBtn.innerHTML = '<i class="fas fa-check-circle"></i> Quiz Completed!';
-          showSummary();
-          progressDiv.textContent = `Quiz Completed: ${answerResults.length} questions`;
-          return;
-        }
-
-        // Update totalQuestions if provided by your API
-        if (data.totalCount) {
-          totalQuestions = data.totalCount;
-        } else {
-          // Fallback: set a default total or length of your question bank
-          totalQuestions = 20; // Change this as per your question count
-        }
-
-        currentQuestionIndex = shownWords.length + 1; // Because we push current question id next
-
-        // Update progress text
-        progressDiv.textContent = `Question ${currentQuestionIndex} of ${totalQuestions}`;
-
-        wordEl.innerHTML = `<strong>Word:</strong> ${data.word}`;
-        currentAnswer = data.answer;
-        shownWords.push(data.id);
-
-        // Reset UI
-        feedbackDiv.style.display = 'none';
-        feedbackDiv.className = 'feedback';
-        submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Submit Answer';
-        submitBtn.disabled = false;
-        submitted = false;
-
-        // Build options
-        optionsEl.innerHTML = '';
-        data.options.forEach((option, i) => {
-          const optionDiv = document.createElement('div');
-          optionDiv.className = 'option';
-          
-          const radio = document.createElement('input');
-          radio.type = 'radio';
-          radio.name = 'opt';
-          radio.id = `opt${i}`;
-          radio.value = option;
-
-          const label = document.createElement('label');
-          label.htmlFor = `opt${i}`;
-          label.textContent = option;
-
-          optionDiv.appendChild(radio);
-          optionDiv.appendChild(label);
-          optionsEl.appendChild(optionDiv);
-        });
-
-        mcqForm.reset();
-      } catch (error) {
-        console.error('Error loading question:', error);
-        feedbackDiv.textContent = 'Error loading question. Please try again.';
-        feedbackDiv.className = 'feedback wrong';
-        feedbackDiv.style.display = 'block';
+      if (data.finished) {
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<i class="fas fa-check-circle"></i> Quiz Completed!';
+        showSummary();
+        progressDiv.textContent = `Quiz Completed: ${answerResults.length} questions`;
+        return;
       }
-    }
 
-    function showFeedback(isCorrect, correctAnswer) {
-      feedbackDiv.style.display = 'none';
-      if (isCorrect) {
-        feedbackDiv.textContent = '✅ Correct! Well done!';
-        feedbackDiv.className = 'feedback correct';
-        correctCount++;
-        correctCountEl.textContent = `Correct: ${correctCount}`;
+      if (data.totalCount) {
+        totalQuestions = data.totalCount;
       } else {
-        feedbackDiv.textContent = `❌ Incorrect. The correct answer is: ${correctAnswer}`;
-        feedbackDiv.className = 'feedback wrong';
-        wrongCount++;
-        wrongCountEl.textContent = `Wrong: ${wrongCount}`;
+        totalQuestions = 20;
       }
+
+      currentQuestionIndex = shownWords.length + 1;
+      progressDiv.textContent = `Question ${currentQuestionIndex} of ${totalQuestions}`;
+
+      wordEl.innerHTML = `<strong>Word:</strong> ${data.word}`;
+      currentAnswer = data.answer;
+      shownWords.push(data.id);
+
+      feedbackDiv.style.display = 'none';
+      feedbackDiv.className = 'feedback';
+      submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Submit Answer';
+      submitBtn.disabled = false;
+      submitted = false;
+
+      optionsEl.innerHTML = '';
+      data.options.forEach((option, i) => {
+        const optionDiv = document.createElement('div');
+        optionDiv.className = 'option';
+
+        const radio = document.createElement('input');
+        radio.type = 'radio';
+        radio.name = 'opt';
+        radio.id = `opt${i}`;
+        radio.value = option;
+
+        const label = document.createElement('label');
+        label.htmlFor = `opt${i}`;
+        label.textContent = option;
+
+        optionDiv.appendChild(radio);
+        optionDiv.appendChild(label);
+        optionsEl.appendChild(optionDiv);
+      });
+
+      mcqForm.reset();
+    } catch (error) {
+      console.error('Error loading question:', error);
+      feedbackDiv.textContent = 'Error loading question. Please try again.';
+      feedbackDiv.className = 'feedback wrong';
+      feedbackDiv.style.display = 'block';
     }
+  }
 
-    function showSummary() {
-      // Hide quiz form & question
-      document.querySelector('.quiz-container').innerHTML = '<h2>Quiz Summary</h2>';
+  function showFeedback(isCorrect, correctAnswer) {
+    feedbackDiv.style.display = 'none';
+    if (isCorrect) {
+      feedbackDiv.textContent = '✅ Correct! Well done!';
+      feedbackDiv.className = 'feedback correct';
+      correctCount++;
+      correctCountEl.textContent = `Correct: ${correctCount}`;
+    } else {
+      feedbackDiv.textContent = `❌ Incorrect. The correct answer is: ${correctAnswer}`;
+      feedbackDiv.className = 'feedback wrong';
+      wrongCount++;
+      wrongCountEl.textContent = `Wrong: ${wrongCount}`;
+    }
+  }
 
-      // Calculate totals
-      const totalCorrect = answerResults.filter(r => r.correct).length;
-      const totalIncorrect = answerResults.length - totalCorrect;
-      const percentage = Math.round((totalCorrect / answerResults.length) * 100);
+  function showSummary() {
+    document.querySelector('.quiz-container').innerHTML = '<h2>Quiz Summary</h2>';
 
-      // Create summary container
-      const summaryDiv = document.createElement('div');
-      summaryDiv.style.padding = '1.5rem';
-      summaryDiv.style.border = '1px solid #4caf50';
-      summaryDiv.style.borderRadius = '8px';
-      summaryDiv.style.backgroundColor = '#e8f5e9';
-      summaryDiv.style.marginTop = '1rem';
+    const totalCorrect = answerResults.filter(r => r.correct).length;
+    const totalIncorrect = answerResults.length - totalCorrect;
+    const percentage = Math.round((totalCorrect / answerResults.length) * 100);
 
-      // Summary text
-      summaryDiv.innerHTML = `
-        <div style="text-align: center; margin-bottom: 1.5rem;">
-          <h3 style="color: var(--primary-dark); margin-bottom: 0.5rem;">Your Score: ${percentage}%</h3>
-          <div style="display: flex; justify-content: center; gap: 1.5rem; margin-bottom: 1rem;">
-            <div style="font-size: 1.2rem; color: var(--correct);">
-              <i class="fas fa-check-circle"></i> ${totalCorrect} Correct
-            </div>
-            <div style="font-size: 1.2rem; color: var(--wrong);">
-              <i class="fas fa-times-circle"></i> ${totalIncorrect} Incorrect
-            </div>
+    const summaryDiv = document.createElement('div');
+    summaryDiv.style.padding = '1.5rem';
+    summaryDiv.style.border = '1px solid #4caf50';
+    summaryDiv.style.borderRadius = '8px';
+    summaryDiv.style.backgroundColor = '#e8f5e9';
+    summaryDiv.style.marginTop = '1rem';
+
+    summaryDiv.innerHTML = `
+      <div style="text-align: center; margin-bottom: 1.5rem;">
+        <h3 style="color: var(--primary-dark); margin-bottom: 0.5rem;">Your Score: ${percentage}%</h3>
+        <div style="display: flex; justify-content: center; gap: 1.5rem; margin-bottom: 1rem;">
+          <div style="font-size: 1.2rem; color: var(--correct);">
+            <i class="fas fa-check-circle"></i> ${totalCorrect} Correct
           </div>
-          <div style="background: white; padding: 1rem; border-radius: 8px; margin-bottom: 1rem;">
-            <div style="width: 100%; height: 20px; background: #e0e0e0; border-radius: 10px; overflow: hidden;">
-              <div style="width: ${percentage}%; height: 100%; background: linear-gradient(90deg, var(--correct) 0%, #8bc34a 100%);"></div>
-            </div>
+          <div style="font-size: 1.2rem; color: var(--wrong);">
+            <i class="fas fa-times-circle"></i> ${totalIncorrect} Incorrect
           </div>
         </div>
-        <h3 style="color: var(--primary-dark); border-bottom: 1px solid var(--border); padding-bottom: 0.5rem;">Incorrect Answers Review</h3>
-      `;
-
-      // Incorrect details list
-      const incorrectList = document.createElement('div');
-      incorrectList.style.marginTop = '1rem';
-
-      const incorrectAnswers = answerResults.filter(r => !r.correct);
-      if (incorrectAnswers.length === 0) {
-        incorrectList.innerHTML = `
-          <div style="text-align: center; padding: 1rem; color: var(--correct);">
-            <i class="fas fa-trophy" style="font-size: 2rem; margin-bottom: 0.5rem;"></i>
-            <p>Perfect! You got all answers correct!</p>
+        <div style="background: white; padding: 1rem; border-radius: 8px; margin-bottom: 1rem;">
+          <div style="width: 100%; height: 20px; background: #e0e0e0; border-radius: 10px; overflow: hidden;">
+            <div style="width: ${percentage}%; height: 100%; background: linear-gradient(90deg, var(--correct) 0%, #8bc34a 100%);"></div>
           </div>
+        </div>
+      </div>
+      <h3 style="color: var(--primary-dark); border-bottom: 1px solid var(--border); padding-bottom: 0.5rem;">Incorrect Answers Review</h3>
+    `;
+
+    const incorrectList = document.createElement('div');
+    incorrectList.style.marginTop = '1rem';
+
+    const incorrectAnswers = answerResults.filter(r => !r.correct);
+    if (incorrectAnswers.length === 0) {
+      incorrectList.innerHTML = `
+        <div style="text-align: center; padding: 1rem; color: var(--correct);">
+          <i class="fas fa-trophy" style="font-size: 2rem; margin-bottom: 0.5rem;"></i>
+          <p>Perfect! You got all answers correct!</p>
+        </div>
+      `;
+    } else {
+      incorrectAnswers.forEach((r, idx) => {
+        const questionDiv = document.createElement('div');
+        questionDiv.style.marginBottom = '1rem';
+        questionDiv.style.padding = '1rem';
+        questionDiv.style.backgroundColor = 'white';
+        questionDiv.style.borderRadius = '8px';
+        questionDiv.style.borderLeft = '4px solid var(--wrong)';
+        questionDiv.innerHTML = `
+          <div style="font-weight: 600; margin-bottom: 0.5rem;">Question ${idx + 1}: <span style="color: var(--primary-dark);">${r.word}</span></div>
+          <div style="margin-bottom: 0.5rem; color: var(--text-light);">Your Answer: <span style="color: var(--wrong); font-weight: 600;">${r.givenAnswer}</span></div>
+          <div style="color: var(--text-light);">Correct Answer: <span style="color: var(--correct); font-weight: 600;">${r.correctAnswer}</span></div>
         `;
-      } else {
-        incorrectAnswers.forEach((r, idx) => {
-          const questionDiv = document.createElement('div');
-          questionDiv.style.marginBottom = '1rem';
-          questionDiv.style.padding = '1rem';
-          questionDiv.style.backgroundColor = 'white';
-          questionDiv.style.borderRadius = '8px';
-          questionDiv.style.borderLeft = '4px solid var(--wrong)';
-          questionDiv.innerHTML = `
-            <div style="font-weight: 600; margin-bottom: 0.5rem;">Question ${idx + 1}</div>
-            <div style="margin-bottom: 0.5rem; color: var(--text-light);">Your Answer: <span style="color: var(--wrong); font-weight: 600;">${r.givenAnswer}</span></div>
-            <div style="color: var(--text-light);">Correct Answer: <span style="color: var(--correct); font-weight: 600;">${r.correctAnswer}</span></div>
-          `;
-          incorrectList.appendChild(questionDiv);
-        });
-      }
-
-      summaryDiv.appendChild(incorrectList);
-
-      // Add restart button
-      const restartBtn = document.createElement('button');
-      restartBtn.className = 'submit-btn';
-      restartBtn.style.marginTop = '1.5rem';
-      restartBtn.style.width = '100%';
-      restartBtn.innerHTML = '<i class="fas fa-redo"></i> Restart Quiz';
-      restartBtn.onclick = function() {
-        location.reload();
-      };
-      summaryDiv.appendChild(restartBtn);
-
-      document.querySelector('.quiz-container').appendChild(summaryDiv);
+        incorrectList.appendChild(questionDiv);
+      });
     }
 
-    mcqForm.addEventListener('submit', function(e) {
-      e.preventDefault();
+    summaryDiv.appendChild(incorrectList);
 
-      if (!submitted) {
-        const selectedOption = document.querySelector('input[name="opt"]:checked');
-        if (!selectedOption) {
-          feedbackDiv.textContent = 'Please select an answer before submitting.';
-          feedbackDiv.className = 'feedback wrong';
-          feedbackDiv.style.display = 'block';
-          return;
+    const restartBtn = document.createElement('button');
+    restartBtn.className = 'submit-btn';
+    restartBtn.style.marginTop = '1.5rem';
+    restartBtn.style.width = '100%';
+    restartBtn.innerHTML = '<i class="fas fa-redo"></i> Restart Quiz';
+    restartBtn.onclick = function () {
+      location.reload();
+    };
+    summaryDiv.appendChild(restartBtn);
+
+    document.querySelector('.quiz-container').appendChild(summaryDiv);
+  }
+
+  mcqForm.addEventListener('submit', function (e) {
+    e.preventDefault();
+
+    if (!submitted) {
+      const selectedOption = document.querySelector('input[name="opt"]:checked');
+      if (!selectedOption) {
+        feedbackDiv.textContent = 'Please select an answer before submitting.';
+        feedbackDiv.className = 'feedback wrong';
+        feedbackDiv.style.display = 'block';
+        return;
+      }
+
+      const allOptions = document.querySelectorAll('.option');
+      allOptions.forEach(optionDiv => {
+        const option = optionDiv.querySelector('input');
+        const label = optionDiv.querySelector('label');
+
+        if (option.value === currentAnswer) {
+          optionDiv.classList.add('correct-option');
         }
 
-        const allOptions = document.querySelectorAll('.option');
-        allOptions.forEach(optionDiv => {
-          const option = optionDiv.querySelector('input');
-          const label = optionDiv.querySelector('label');
+        if (option.checked && option.value !== currentAnswer) {
+          optionDiv.classList.add('wrong-option');
+        }
 
-          if (option.value === currentAnswer) {
-            optionDiv.classList.add('correct-option');
-          }
+        option.disabled = true;
+      });
 
-          if (option.checked && option.value !== currentAnswer) {
-            optionDiv.classList.add('wrong-option');
-          }
+      const isCorrect = selectedOption.value === currentAnswer;
+      showFeedback(isCorrect, currentAnswer);
 
-          option.disabled = true;
-        });
+      const lastQuestionId = shownWords[shownWords.length - 1];
+      const currentWord = wordEl.textContent.replace('Word:', '').trim();
 
-        // Show feedback
-        const isCorrect = selectedOption.value === currentAnswer;
-        showFeedback(isCorrect, currentAnswer);
+      answerResults.push({
+        id: lastQuestionId,
+        word: currentWord,
+        correct: isCorrect,
+        givenAnswer: selectedOption.value,
+        correctAnswer: currentAnswer
+      });
 
-        // Save result for this question
-        const lastQuestionId = shownWords[shownWords.length - 1];
-        answerResults.push({
-          id: lastQuestionId,
-          correct: isCorrect,
-          givenAnswer: selectedOption.value,
-          correctAnswer: currentAnswer
-        });
+      submitBtn.innerHTML = '<i class="fas fa-arrow-right"></i> Next Question';
+      submitted = true;
+    } else {
+      loadQuestion();
+    }
+  });
 
-        submitBtn.innerHTML = '<i class="fas fa-arrow-right"></i> Next Question';
-        submitted = true;
-      } else {
-        loadQuestion();
-      }
-    });
+  loadQuestion();
+</script>
 
-    // Load first question
-    loadQuestion();
-  </script>
 </body>
 </html>

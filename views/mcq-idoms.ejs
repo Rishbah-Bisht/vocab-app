@@ -248,181 +248,184 @@
     <div id="summary" class="result-summary"></div>
   </div>
 
-  <script>
-    const idiomDisplay = document.getElementById('idiomDisplay');
-    const optionsContainer = document.getElementById('optionsContainer');
-    const quizForm = document.getElementById('quizForm');
-    const submitBtn = document.getElementById('submitBtn');
-    const btnText = document.getElementById('btnText');
-    const summaryDiv = document.getElementById('summary');
+<script>
+  const idiomDisplay = document.getElementById('idiomDisplay');
+  const optionsContainer = document.getElementById('optionsContainer');
+  const quizForm = document.getElementById('quizForm');
+  const submitBtn = document.getElementById('submitBtn');
+  const btnText = document.getElementById('btnText');
+  const summaryDiv = document.getElementById('summary');
 
-    let currentAnswer = '';
-    let shownIdioms = [];
-    let submitted = false;
-    const answerResults = [];
+  let currentAnswer = '';
+  let shownIdioms = [];
+  let submitted = false;
+  const answerResults = [];
 
-    let totalQuestions = 0;
-    let currentQuestionIndex = 0;
+  let totalQuestions = 0;
+  let currentQuestionIndex = 0;
 
-    async function loadQuestion() {
-      try {
-        const response = await fetch('/idioms-mcq-json?shown=' + JSON.stringify(shownIdioms));
-        const data = await response.json();
+  async function loadQuestion() {
+    try {
+      const response = await fetch('/idioms-mcq-json?shown=' + JSON.stringify(shownIdioms));
+      const data = await response.json();
 
-        if (data.finished) {
-          submitBtn.disabled = true;
-          btnText.textContent = "Quiz Completed!";
-          submitBtn.innerHTML = '<i class="fas fa-check-circle"></i> <span id="btnText">Quiz Completed!</span>';
-          showSummary();
-          return;
-        }
-
-        if (data.totalCount) totalQuestions = data.totalCount;
-        else totalQuestions = 20; // fallback
-
-        currentQuestionIndex = shownIdioms.length + 1;
-        idiomDisplay.textContent = `Idiom: ${data.idiom}`;
-        currentAnswer = data.answer;
-        shownIdioms.push(data.id);
-
-        // Build options
-        optionsContainer.innerHTML = '';
-        data.options.forEach((option, i) => {
-          const optionDiv = document.createElement('div');
-          optionDiv.className = 'option';
-          
-          const radio = document.createElement('input');
-          radio.type = 'radio';
-          radio.name = 'opt';
-          radio.id = `opt${i}`;
-          radio.value = option;
-
-          const label = document.createElement('label');
-          label.htmlFor = `opt${i}`;
-          label.textContent = option;
-
-          optionDiv.appendChild(radio);
-          optionDiv.appendChild(label);
-          optionsContainer.appendChild(optionDiv);
-        });
-
-        quizForm.reset();
-        btnText.textContent = 'Submit Answer';
-        submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> <span id="btnText">Submit Answer</span>';
-        submitted = false;
-        summaryDiv.style.display = 'none';
-
-      } catch (err) {
-        idiomDisplay.textContent = "Error loading question. Please try again.";
-        console.error(err);
+      if (data.finished) {
+        submitBtn.disabled = true;
+        btnText.textContent = "Quiz Completed!";
+        submitBtn.innerHTML = '<i class="fas fa-check-circle"></i> <span id="btnText">Quiz Completed!</span>';
+        showSummary();
+        return;
       }
+
+      if (data.totalCount) totalQuestions = data.totalCount;
+      else totalQuestions = 20; // fallback
+
+      currentQuestionIndex = shownIdioms.length + 1;
+      idiomDisplay.textContent = `Idiom: ${data.idiom}`;
+      currentAnswer = data.answer;
+      shownIdioms.push(data.id);
+
+      // Build options
+      optionsContainer.innerHTML = '';
+      data.options.forEach((option, i) => {
+        const optionDiv = document.createElement('div');
+        optionDiv.className = 'option';
+
+        const radio = document.createElement('input');
+        radio.type = 'radio';
+        radio.name = 'opt';
+        radio.id = `opt${i}`;
+        radio.value = option;
+
+        const label = document.createElement('label');
+        label.htmlFor = `opt${i}`;
+        label.textContent = option;
+
+        optionDiv.appendChild(radio);
+        optionDiv.appendChild(label);
+        optionsContainer.appendChild(optionDiv);
+      });
+
+      quizForm.reset();
+      btnText.textContent = 'Submit Answer';
+      submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> <span id="btnText">Submit Answer</span>';
+      submitted = false;
+      summaryDiv.style.display = 'none';
+
+    } catch (err) {
+      idiomDisplay.textContent = "Error loading question. Please try again.";
+      console.error(err);
     }
+  }
 
-    function showSummary() {
-      quizForm.style.display = 'none';
-      summaryDiv.style.display = 'block';
+  function showSummary() {
+    quizForm.style.display = 'none';
+    summaryDiv.style.display = 'block';
 
-      const totalCorrect = answerResults.filter(r => r.correct).length;
-      const totalIncorrect = answerResults.length - totalCorrect;
-      const accuracy = Math.round((totalCorrect / answerResults.length) * 100);
+    const totalCorrect = answerResults.filter(r => r.correct).length;
+    const totalIncorrect = answerResults.length - totalCorrect;
+    const accuracy = Math.round((totalCorrect / answerResults.length) * 100);
 
-      let html = `
-        <h3><i class="fas fa-chart-pie"></i> Quiz Summary</h3>
-        <p><strong>Total Questions:</strong> ${answerResults.length}</p>
-        <p><strong>Correct Answers:</strong> ${totalCorrect}</p>
-        <p><strong>Incorrect Answers:</strong> ${totalIncorrect}</p>
-        <p><strong>Accuracy:</strong> ${accuracy}%</p>
-      `;
+    let html = `
+      <h3><i class="fas fa-chart-pie"></i> Quiz Summary</h3>
+      <p><strong>Total Questions:</strong> ${answerResults.length}</p>
+      <p><strong>Correct Answers:</strong> ${totalCorrect}</p>
+      <p><strong>Incorrect Answers:</strong> ${totalIncorrect}</p>
+      <p><strong>Accuracy:</strong> ${accuracy}%</p>
+    `;
 
-      if (totalIncorrect > 0) {
-        html += `
-          <h4><i class="fas fa-exclamation-circle"></i> Mistakes to Review:</h4>
-          <ul>
-        `;
-
-        answerResults.filter(r => !r.correct).forEach(r => {
-          html += `
-            <li>
-              <strong>${r.idiom}</strong><br>
-              <span style="color:var(--wrong);">Your answer: ${r.givenAnswer}</span><br>
-              <span style="color:var(--correct);">Correct answer: ${r.correctAnswer}</span>
-            </li>
-          `;
-        });
-
-        html += '</ul>';
-      } else {
-        html += `
-          <div style="text-align:center; margin-top:1rem;">
-            <i class="fas fa-trophy" style="font-size:2rem; color:var(--correct);"></i>
-            <p>Perfect! You got all answers correct!</p>
-          </div>
-        `;
-      }
-
-      // Add restart button
+    if (totalIncorrect > 0) {
       html += `
-        <button onclick="location.reload()" style="
-          margin-top: 1rem;
-          padding: 0.8rem 1.5rem;
-          background: var(--primary);
-          color: white;
-          border: none;
-          border-radius: 8px;
-          cursor: pointer;
-          font-size: 1rem;
-          display: flex;
-          align-items: center;
-          gap: 0.5rem;
-        ">
-          <i class="fas fa-redo"></i> Try Again
-        </button>
+        <h4><i class="fas fa-exclamation-circle"></i> Mistakes to Review:</h4>
+        <ul style="padding-left: 1rem;">
       `;
 
-      summaryDiv.innerHTML = html;
+      answerResults.filter(r => !r.correct).forEach((r, index) => {
+        html += `
+          <li style="margin-bottom: 1rem;">
+            <div><strong>Idiom:</strong> <span style="color: var(--primary-dark);">${r.idiom}</span></div>
+            <div style="color: var(--wrong);">Your Answer: <strong>${r.givenAnswer}</strong></div>
+            <div style="color: var(--correct);">Correct Answer: <strong>${r.correctAnswer}</strong></div>
+          </li>
+        `;
+      });
+
+      html += '</ul>';
+    } else {
+      html += `
+        <div style="text-align:center; margin-top:1rem;">
+          <i class="fas fa-trophy" style="font-size:2rem; color:var(--correct);"></i>
+          <p>Perfect! You got all answers correct!</p>
+        </div>
+      `;
     }
 
-    quizForm.addEventListener('submit', (e) => {
-      e.preventDefault();
+    // Add restart button
+    html += `
+      <button onclick="location.reload()" style="
+        margin-top: 1rem;
+        padding: 0.8rem 1.5rem;
+        background: var(--primary);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      ">
+        <i class="fas fa-redo"></i> Try Again
+      </button>
+    `;
 
-      if (!submitted) {
-        const selectedOption = document.querySelector('input[name="opt"]:checked');
-        if (!selectedOption) {
-          alert('Please select an option');
-          return;
-        }
+    summaryDiv.innerHTML = html;
+  }
 
-        const allOptions = document.querySelectorAll('.option');
-        allOptions.forEach(option => {
-          const radio = option.querySelector('input');
-          if (radio.value === currentAnswer) {
-            option.classList.add('correct-option');
-          }
-          if (radio.checked && radio.value !== currentAnswer) {
-            option.classList.add('wrong-option');
-          }
-          radio.disabled = true;
-        });
+  quizForm.addEventListener('submit', (e) => {
+    e.preventDefault();
 
-        // Save result for this question
-        const lastQuestionId = shownIdioms[shownIdioms.length - 1];
-        answerResults.push({
-          id: lastQuestionId,
-          idiom: idiomDisplay.textContent.replace('Idiom: ', ''),
-          correct: selectedOption.value === currentAnswer,
-          givenAnswer: selectedOption.value,
-          correctAnswer: currentAnswer
-        });
-
-        btnText.textContent = 'Next Question';
-        submitBtn.innerHTML = '<i class="fas fa-arrow-right"></i> <span id="btnText">Next Question</span>';
-        submitted = true;
-      } else {
-        loadQuestion();
+    if (!submitted) {
+      const selectedOption = document.querySelector('input[name="opt"]:checked');
+      if (!selectedOption) {
+        alert('Please select an option');
+        return;
       }
-    });
 
-    loadQuestion();
+      const allOptions = document.querySelectorAll('.option');
+      allOptions.forEach(option => {
+        const radio = option.querySelector('input');
+        if (radio.value === currentAnswer) {
+          option.classList.add('correct-option');
+        }
+        if (radio.checked && radio.value !== currentAnswer) {
+          option.classList.add('wrong-option');
+        }
+        radio.disabled = true;
+      });
+
+      // Save result for this question
+      const lastQuestionId = shownIdioms[shownIdioms.length - 1];
+      const idiomText = idiomDisplay.textContent.replace('Idiom: ', '');
+      answerResults.push({
+        id: lastQuestionId,
+        idiom: idiomText,
+        correct: selectedOption.value === currentAnswer,
+        givenAnswer: selectedOption.value,
+        correctAnswer: currentAnswer
+      });
+
+      btnText.textContent = 'Next Question';
+      submitBtn.innerHTML = '<i class="fas fa-arrow-right"></i> <span id="btnText">Next Question</span>';
+      submitted = true;
+    } else {
+      loadQuestion();
+    }
+  });
+
+  loadQuestion();
+</script>
+
   </script>
 </body>
 </html>

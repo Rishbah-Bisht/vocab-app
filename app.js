@@ -296,7 +296,7 @@ app.post('/add-word', async (req, res) => {
       date: date ? new Date(date) : undefined  // optional: if date provided, use it; else default
     });
 
-    res.redirect('/home');
+    res.redirect('/day_wise_vocab');
   } catch (error) {
     console.error('Error adding word:', error);
     res.status(500).send('Error adding word');
